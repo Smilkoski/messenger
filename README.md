@@ -24,6 +24,7 @@ Instaling
 7. Make migrations
 
 `python manage.py makemigrations`
+
 `python manage.py migrate`
 
 8. Run the app.
