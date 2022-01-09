@@ -1,16 +1,23 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
 
 from .models import CustomUser
 
 
+@login_required
 def profile(request, id):
-    context = {'user': CustomUser.objects.get(id=id)}
-    return render(request, 'users/profile.html', context)
+    user = CustomUser.objects.get(id=id)
+    context = {'user': user}
+
+    if user.user == request.user:
+        return render(request, 'users/profile.html', context)
+    else:
+        return HttpResponseNotFound('<h1>Page not found</h1>')
 
 
 def login_view(request):
