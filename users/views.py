@@ -5,6 +5,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from .models import CustomUser
+
+
+def profile(request, id):
+    context = {'user': CustomUser.objects.get(id=id)}
+    return render(request, 'users/profile.html', context)
+
 
 def login_view(request):
     if request.method == "POST":
