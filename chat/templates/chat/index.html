@@ -1,15 +1,17 @@
 {% extends "chat/layout.html" %}
 {% load static %}
 
-{% block body %}
+{% block messages %}
+    <div id="groups">
+        {% for g in groups %}
+            <div class="group-item" data-id="{{ g.id }}">
+                <h2 class="group-name"><a>{{ g.name }}</a></h2>
+                <p class="text-muted">{{ g.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
 
-    <h2>{{ request.user.email }}</h2>
+    <div id="chat">
+    </div>
+{% endblock messages %}
 
-    <hr>
-
-
-{% endblock %}
-
-{% block script %}
-{#    <script src="{% static 'chat/inbox.js' %}"></script>#}
-{% endblock %}
