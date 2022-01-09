@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Profile(models.Model):
+class CustomUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='C:/Users/Hristijan/PycharmProjects/messenger/media/default.jpg', upload_to='C:/Users/Hristijan/PycharmProjects/messenger/media/profile_pics')
 
     def __str__(self):
         return f'{self.user.username} Profile'
