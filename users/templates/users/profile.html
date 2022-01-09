@@ -1,16 +1,18 @@
 {% extends 'chat/layout.html' %}
+{% load static %}
 
 {% block body %}
     <div class="content-section">
         <div class="media">
-                  <img class="rounded-circle account-img" src="{{ user.image.url }}">
+            <img class="rounded-circle account-img" src="{{ user.image.url }}">
             <div class="media-body">
-                <h2 class="account-heading">{{ user.username }}</h2>
-                <p class="text-secondary">{{ user.email }}</p>
+                <h2 class="account-heading">{{ user.user.username }}</h2>
+                <p class="text-secondary">{{ user.user.email }}</p>
             </div>
+        </div>
+        <div>
+            <p>{{ user.biography }}</p>
 
         </div>
-
-
     </div>
 {% endblock body %}
