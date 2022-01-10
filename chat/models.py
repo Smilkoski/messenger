@@ -29,3 +29,8 @@ class Message(models.Model):
                 'custom_user_id': self.custom_user.id,
                 'custom_user_image_url': self.custom_user.image.url,
                 'group': self.group.serializable(), }
+
+
+class UserGroup(models.Model):
+    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='custom_user')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group')
