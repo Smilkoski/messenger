@@ -78,9 +78,10 @@ ul {
     float: left;
 }
 
-.group-item > *{
+.group-item > * {
     margin-left: 20px;
 }
+
 .group-item:hover {
     background: #dddddd;
     border-radius: 5px;
@@ -98,7 +99,6 @@ a.group-name:hover {
 #chat {
     display: block;
     width: 1000px;
-    height: 500px;
     float: left;
     border-left: 1px black solid;
     margin-left: -1px;
@@ -139,9 +139,4 @@ a.group-name:hover {
 .message p:last-child {
     font-size: 15px;
     font-family: Slack-Lato, appleLogo, sans-serif;
-}
-
-ul {
-    list-style-type: none;
-    height: 500px;
 }
