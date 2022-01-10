@@ -19,3 +19,7 @@ class CustomUser(models.Model):
             output_size = (400, 400)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+    def serializable(self):
+        return {'id': self.id,
+                'user_id': self.user.id, }
