@@ -2,9 +2,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import CustomUser
 
@@ -70,3 +71,21 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "users/register.html")
+
+
+@csrf_exempt
+@login_required
+def user(request, user_id):
+    # Query for requested message
+    try:
+        custom_user = CustomUser.objects.get(user_id=user_id)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+
+    if custom_user is not None:
+        return JsonResponse(custom_user.serializable())
+
+    else:
+        return JsonResponse({
+            "error": "ERROR"
+        }, status=400)
