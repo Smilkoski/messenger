@@ -21,5 +21,9 @@ class CustomUser(models.Model):
             img.save(self.image.path)
 
     def serializable(self):
-        return {'id': self.id,
-                'user_id': self.user.id, }
+        return {
+            'id': self.id,
+            'user_id': self.user.id,
+            'image_url': self.image.url,
+            'name': self.user.username,
+        }
