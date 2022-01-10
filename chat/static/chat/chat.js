@@ -1,26 +1,67 @@
+CURRENT_GROUP = -1
+
 document.addEventListener('DOMContentLoaded', function () {
 
-  renderData(1)
+  const chat_messages = document.querySelector('#messages')
+  const first_group_id = document.querySelector('#groups').firstElementChild.dataset.id
+
+  renderData(first_group_id)
+
   document.querySelectorAll('.group-item').forEach(function (gi) {
     gi.onclick = function () {
-      console.log(gi.dataset.id);
       group_id = gi.dataset.id;
-      const chat = document.querySelector('#chat')
-      chat.innerHTML = ''
+      chat_messages.innerHTML = ''
 
       renderData(group_id)
     }
   })
 
+  document.querySelector('#send-message').onclick = function () {
+    const input = document.querySelector('input.form-control')
+    const value = input.value
+    if (value === ''){
+      return
+    }
+    let user_id = document.querySelector('#send-message').dataset.user_id
+
+    fetch('/user/' + user_id)
+      .then(response => response.json())
+      .then(user => {
+
+        let tmp = `<div class="message">
+                 <img src="` + user['image_url'] + `" alt="user image">
+                 <a href="/profile/` + user['id'] + `">` + user['name'] + `</a>
+                 <p class="text-muted">` + formatAMPM(new Date()) + `</p>
+                 <p>` + value + `</p>
+           </div>`
+
+        chat_messages.innerHTML = tmp + chat_messages.innerHTML
+
+        fetch('/add_message/', {
+          method: 'POST',
+          body: JSON.stringify({
+            msg: value,
+            user_id: user.id,
+            group_id: CURRENT_GROUP,
+          })
+        }).then(response => response.json())
+          .then(response => {
+            console.log(response)
+          });
+      });
+    input.value = ''
+
+  }
+
 });
 
 function renderData(group_id) {
+  CURRENT_GROUP = group_id
   fetch('/messages/' + group_id)
     .then(response => response.json())
     .then(messages => {
-      console.log(messages)
-      tmp = ''
-      for (m in messages) {
+      let tmp = ''
+      for (let m in messages) {
         tmp += `
              <div class="message">
                  <img src="` + messages[m].custom_user_image_url + `" alt="user image">
@@ -29,7 +70,8 @@ function renderData(group_id) {
                  <p>` + messages[m].message + `</p>
              </div>`
       }
-      chat.innerHTML = tmp
+      document.querySelector('#messages').innerHTML = tmp
+
     });
 }
 
