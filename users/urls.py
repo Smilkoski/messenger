@@ -24,6 +24,8 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register, name="register"),
     path("profile/<int:id>/", views.profile, name="profile"),
+    # API Routes
+    path("user/<int:user_id>/", views.user, name="get_user"),
 ]
 
 if settings.DEBUG:
