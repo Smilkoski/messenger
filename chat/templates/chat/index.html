@@ -1,6 +1,12 @@
 {% extends "chat/layout.html" %}
 {% load static %}
 
+{% block body %}
+    {% if user.is_authenticated or user.user.is_authenticated %}
+        <a class="btn btn-success" href="{% url 'new_group' %}">Add New Group</a>
+    {% endif %}
+{% endblock body %}
+
 {% block messages %}
     <div id="groups">
         {% for g in groups %}
@@ -12,6 +18,18 @@
     </div>
 
     <div id="chat">
+        <div class="message-form">
+            <form method="post">
+                <div class="form-group">
+                    <input autofocus class="form-control" type="text" name="message" placeholder="Message">
+                </div>
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <input id="send-message" data-user_id="{{ user.id }}"
+                       class="btn btn-primary" type="button" value="Send">
+            </form>
+        </div>
+        <div id="messages">
+        </div>
     </div>
 {% endblock messages %}
 
