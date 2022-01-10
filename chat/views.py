@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -67,3 +69,16 @@ def new_group(request):
             'custom_users': CustomUser.objects.all()
         }
         return render(request, 'chat/new_group.html', context)
+
+
+@csrf_exempt
+@login_required
+def add_message(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+    message = Message(custom_user_id=data['user_id'], group_id=data['group_id'], message=data['msg'])
+    message.save()
+
+    return JsonResponse({"message": "Message saved successfully."}, status=201)
