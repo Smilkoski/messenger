@@ -17,10 +17,11 @@ from django.conf.urls.static import static
 from django.urls import path
 
 from messenger import settings
-from .views import index, messages
+from .views import index, messages,new_group
 
 urlpatterns = [
     path("", index, name="index"),
+    path("new_group/", new_group, name="new_group"),
     # API Routes
     path('messages/<int:group_id>/', messages, name='messages'),
 ]
