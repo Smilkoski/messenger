@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from users.models import CustomUser
@@ -47,18 +48,22 @@ def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
         desc = request.POST['description']
-        # g = Group(name=name,description=desc)
-        # g.save()
+        g = Group.objects.get(name=name, description=desc)
+        g.save()
 
-        names = [c.user.username for c in list(CustomUser.objects.all())]
-        names_to_add = []
-        for name in names:
-            if request.POST[names] is not None:
-                names_to_add.append(name)
+        names = list(request.POST)[3:]
+        customusers = CustomUser.objects.filter(user__username__in=names).all()
+        for cu in customusers:
+            ug = UserGroup(custom_user=cu, group=g)
+            ug.save()
 
-        print(request)
+        current_user = CustomUser.objects.get(user_id=request.user.id)
+        ug = UserGroup(custom_user=current_user, group=g)
+        ug.save()
 
+        return redirect(reverse('index'))
     else:
-        context = {}
-        context['custom_users'] = CustomUser.objects.all()
+        context = {
+            'custom_users': CustomUser.objects.all()
+        }
         return render(request, 'chat/new_group.html', context)
