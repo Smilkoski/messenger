@@ -28,6 +28,11 @@ ul {
     font-weight: 500;
 }
 
+.nav-item, .nav-link {
+    display: block;
+    float: right;
+}
+
 .content-section {
     background: #ffffff;
     padding: 10px 20px;
@@ -53,12 +58,6 @@ ul {
     text-decoration: none;
 }
 
-.article-svg {
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-}
-
 .account-img {
     height: 125px;
     width: 125px;
@@ -68,4 +67,81 @@ ul {
 
 .account-heading {
     font-size: 2.5rem;
+}
+
+#groups {
+    display: block;
+    width: 300px;
+    height: 800px;
+    border-right: 1px black solid;
+    margin-right: -1px;
+    float: left;
+}
+
+.group-item > *{
+    margin-left: 20px;
+}
+.group-item:hover {
+    background: #dddddd;
+    border-radius: 5px;
+}
+
+.group-name {
+    color: #444444;
+}
+
+a.group-name:hover {
+    color: #428bca;
+    text-decoration: none;
+}
+
+#chat {
+    display: block;
+    width: 1000px;
+    height: 500px;
+    float: left;
+    border-left: 1px black solid;
+    margin-left: -1px;
+}
+
+.message {
+    height: 75px;
+    margin: 10px;
+}
+
+.message:hover {
+    background: #dddddd;
+    border-radius: 5px;
+}
+
+.message img {
+    margin: 5px;
+    height: 60px;
+    width: 60px;
+    border-radius: 5px;
+    display: block;
+    float: left;
+}
+
+.message a {
+    color: black;
+    font-weight: bold;
+    display: block;
+    float: left;
+    margin-right: 10px;
+}
+
+.message p:first-child {
+    margin-top: 20px;
+
+}
+
+.message p:last-child {
+    font-size: 15px;
+    font-family: Slack-Lato, appleLogo, sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    height: 500px;
 }
