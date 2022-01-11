@@ -50,7 +50,7 @@ def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
         desc = request.POST['description']
-        g = Group.objects.get(name=name, description=desc)
+        g = Group.objects.create(name=name, description=desc)
         g.save()
 
         names = list(request.POST)[3:]
