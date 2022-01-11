@@ -1,4 +1,4 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -24,16 +24,14 @@ def login_view(request):
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
-        user = User.objects.get(username=username)
+        user = authenticate(username=username, password=password)
 
-        # Check if authentication successful
-        if user is not None and user.password == password:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
+        if user is None:
             return render(request, "users/login.html", {
                 "message": "Invalid username and/or password."
             })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "users/login.html")
 
@@ -59,7 +57,8 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User(username=username, email=email, password=password)
+            user = User(username=username, email=email)
+            user.set_password(password)
             user.save()
             cu = CustomUser(user=user, image=image)
             cu.save()
@@ -68,7 +67,6 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "users/register.html")
 
