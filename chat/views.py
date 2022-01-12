@@ -90,3 +90,43 @@ def add_message(request):
     message.save()
 
     return JsonResponse({"message": "Message saved successfully."}, status=201)
+
+
+def update_group(request, group_id):
+    if request.method == 'POST':
+        name = request.POST['name']
+        desc = request.POST['description']
+
+        UserGroup.objects.filter(group_id=group_id).delete()
+
+        g = Group.objects.get(id=group_id)
+        g.name = name
+        g.description = desc
+        g.save()
+
+        names = list(request.POST)[3:]
+        custom_users = CustomUser.objects.filter(user__username__in=names).all()
+        for cu in custom_users:
+            ug = UserGroup(custom_user=cu, group=g)
+            ug.save()
+
+        return redirect(reverse('index'))
+
+    else:
+        participants = UserGroup.objects.filter(group_id=group_id).all().values_list('custom_user', flat=True)
+        participants_ids = tuple(participants)
+        participants = CustomUser.objects.filter(user_id__in=participants_ids).all()
+
+        not_participants = CustomUser.objects.raw(
+            'select id,user_id from users_customuser WHERE user_id NOT IN ' + str(participants_ids))
+
+        g = Group.objects.get(id=group_id)
+        context = {
+            'group_id': group_id,
+            'group_name': g.name,
+            'group_desc': g.description,
+            'participants': participants,
+            'not_participants': not_participants,
+        }
+
+        return render(request, 'chat/update_group.html', context)
