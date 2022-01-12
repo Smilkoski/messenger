@@ -1,0 +1,31 @@
+{% extends "chat/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <form action="{% url 'update_group' group_id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input autofocus class="form-control" type="text" name="name" value="{{ group_name }}">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="description" value="{{ group_desc }}">
+        </div>
+        <h5>Chose Friends For Group</h5>
+        {% for u in participants %}
+            <input class="ml-5" type="checkbox" id="{{ u.id }}" name="{{ u.user.username }}"
+                   checked value="{{ u.user.username }}">
+            <label for="{{ u.id }}"> {{ u.user.username }}</label><br>
+        {% endfor %}
+        {% for u in not_participants %}
+            <input class="ml-5" type="checkbox" id="{{ u.id }}" name="{{ u.user.username }}"
+                   value="{{ u.user.username }}">
+            <label for="{{ u.id }}"> {{ u.user.username }}</label><br>
+        {% endfor %}
+
+        <input class="btn btn-primary" type="submit" value="Add">
+    </form>
+
+
+{% endblock body %}
+
