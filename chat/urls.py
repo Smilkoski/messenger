@@ -22,11 +22,13 @@ from .views import (
     messages,
     new_group,
     add_message,
+    update_group,
 )
 
 urlpatterns = [
     path("", index, name="index"),
     path("new_group/", new_group, name="new_group"),
+    path("update_group/<int:group_id>/", update_group, name="update_group"),
     # API Routes
     path('messages/<int:group_id>/', messages, name='messages'),
     path('add_message/', add_message, name='add_message'),
