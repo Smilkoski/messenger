@@ -1,11 +1,12 @@
 CURRENT_GROUP = -1
 
 document.addEventListener('DOMContentLoaded', function () {
-
   const chat_messages = document.querySelector('#messages')
-  const first_group_id = document.querySelector('#groups').firstElementChild.dataset.id
-
-  renderData(first_group_id)
+  let first_group_id = null
+  if (document.querySelector('#groups') != null) {
+    first_group_id = document.querySelector('#groups').firstElementChild.dataset.id
+    renderData(first_group_id)
+  }
 
   document.querySelectorAll('.group-item').forEach(function (gi) {
     gi.onclick = function () {
@@ -15,44 +16,44 @@ document.addEventListener('DOMContentLoaded', function () {
       renderData(group_id)
     }
   })
+  if (document.querySelector('#send-message') != null) {
+    document.querySelector('#send-message').onclick = function () {
+      const input = document.querySelector('input.form-control')
+      const value = input.value
+      if (value === '') {
+        return
+      }
+      let user_id = document.querySelector('#send-message').dataset.user_id
 
-  document.querySelector('#send-message').onclick = function () {
-    const input = document.querySelector('input.form-control')
-    const value = input.value
-    if (value === ''){
-      return
-    }
-    let user_id = document.querySelector('#send-message').dataset.user_id
+      fetch('/user/' + user_id)
+        .then(response => response.json())
+        .then(user => {
 
-    fetch('/user/' + user_id)
-      .then(response => response.json())
-      .then(user => {
-
-        let tmp = `<div class="message">
+          let tmp = `<div class="message">
                  <img src="` + user['image_url'] + `" alt="user image">
                  <a href="/profile/` + user['id'] + `">` + user['name'] + `</a>
                  <p class="text-muted">` + formatAMPM(new Date()) + `</p>
                  <p>` + value + `</p>
            </div>`
 
-        chat_messages.innerHTML = tmp + chat_messages.innerHTML
+          chat_messages.innerHTML = tmp + chat_messages.innerHTML
 
-        fetch('/add_message/', {
-          method: 'POST',
-          body: JSON.stringify({
-            msg: value,
-            user_id: user.id,
-            group_id: CURRENT_GROUP,
-          })
-        }).then(response => response.json())
-          .then(response => {
-            console.log(response)
-          });
-      });
-    input.value = ''
+          fetch('/add_message/', {
+            method: 'POST',
+            body: JSON.stringify({
+              msg: value,
+              user_id: user.id,
+              group_id: CURRENT_GROUP,
+            })
+          }).then(response => response.json())
+            .then(response => {
+              console.log(response)
+            });
+        });
+      input.value = ''
 
+    }
   }
-
 });
 
 function renderData(group_id) {
@@ -88,3 +89,9 @@ const formatAMPM = (date) => {
 
   return strTime;
 };
+
+setInterval(function () {
+  if (CURRENT_GROUP !== -1) {
+    renderData(CURRENT_GROUP)
+  }
+}, 5000);
