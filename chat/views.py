@@ -1,4 +1,6 @@
 import json
+import random
+import string
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -15,6 +17,9 @@ from .models import (
 
 
 def index(request):
+    if request.user.is_anonymous:
+        return redirect(reverse('login'))
+
     # get groups where current user is present
     usergroups = UserGroup.objects \
         .filter(custom_user__user__username=request.user).all()
@@ -50,6 +55,9 @@ def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
         desc = request.POST['description']
+        if Group.objects.filter(name=name).count() > 0:
+            name = '-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+
         g = Group.objects.create(name=name, description=desc)
         g.save()
 
