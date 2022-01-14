@@ -55,7 +55,7 @@ def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
         desc = request.POST['description']
-        if Group.objects.filter(name=name).count() > 0:
+        if Group.objects.filter(name=name).exist():
             name = '-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
 
         g = Group.objects.create(name=name, description=desc)
@@ -99,10 +99,7 @@ def update_group(request, group_id):
 
         UserGroup.objects.filter(group_id=group_id).delete()
 
-        g = Group.objects.get(id=group_id)
-        g.name = name
-        g.description = desc
-        g.save()
+        g = Group.objects.get(id=group_id).update(name=name, description=desc)
 
         names = list(request.POST)[3:]
         custom_users = CustomUser.objects.filter(user__username__in=names).all()
@@ -118,7 +115,7 @@ def update_group(request, group_id):
         participants = CustomUser.objects.filter(user_id__in=participants_ids).all()
 
         not_participants = CustomUser.objects.raw(
-            'select id,user_id from users_customuser WHERE user_id NOT IN ' + str(participants_ids))
+            f'select id,user_id from users_customuser WHERE user_id NOT IN {participants_ids}')
 
         g = Group.objects.get(id=group_id)
         context = {
