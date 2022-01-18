@@ -55,8 +55,8 @@ def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
         desc = request.POST['description']
-        if Group.objects.filter(name=name).exist():
-            name = '-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        if Group.objects.filter(name=name).exists():
+            name += '-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
 
         g = Group.objects.create(name=name, description=desc)
         g.save()
