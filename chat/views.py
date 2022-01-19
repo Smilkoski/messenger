@@ -7,15 +7,17 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from ratelimit.decorators import ratelimit
 
 from users.models import CustomUser
 from .models import (
     Group,
     Message,
-    UserGroup
+    UserGroup,
 )
 
 
+@ratelimit(key='ip', rate='100/d', block=True)
 def index(request):
     if request.user.is_anonymous:
         return redirect(reverse('login'))
@@ -33,6 +35,7 @@ def index(request):
 
 @csrf_exempt
 @login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def messages(request, group_id):
     # Query for requested message
     try:
@@ -51,6 +54,9 @@ def messages(request, group_id):
         }, status=400)
 
 
+@csrf_exempt
+@login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def new_group(request):
     if request.method == 'POST':
         name = request.POST['name']
@@ -81,6 +87,7 @@ def new_group(request):
 
 @csrf_exempt
 @login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def add_message(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -92,6 +99,9 @@ def add_message(request):
     return JsonResponse({"message": "Message saved successfully."}, status=201)
 
 
+@csrf_exempt
+@login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def update_group(request, group_id):
     if request.method == 'POST':
         name = request.POST['name']
@@ -99,8 +109,8 @@ def update_group(request, group_id):
 
         UserGroup.objects.filter(group_id=group_id).delete()
 
-        g = Group.objects.get(id=group_id).update(name=name, description=desc)
-
+        Group.objects.filter(id=group_id).update(name=name, description=desc)
+        g = Group.objects.get(id=group_id)
         names = list(request.POST)[3:]
         custom_users = CustomUser.objects.filter(user__username__in=names).all()
         for cu in custom_users:

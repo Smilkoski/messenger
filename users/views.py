@@ -6,11 +6,13 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from ratelimit.decorators import ratelimit
 
 from .models import CustomUser
 
 
 @login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def profile(request, id):
     user = CustomUser.objects.get(id=id)
     context = {'user': user}
@@ -18,6 +20,7 @@ def profile(request, id):
     return render(request, 'users/profile.html', context)
 
 
+@ratelimit(key='ip', rate='100/d', block=True)
 def login_view(request):
     if request.method == "POST":
 
@@ -41,6 +44,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+@ratelimit(key='ip', rate='100/d', block=True)
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -74,6 +78,7 @@ def register(request):
 
 @csrf_exempt
 @login_required
+@ratelimit(key='ip', rate='100/d', block=True)
 def user(request, user_id):
     # Query for requested message
     try:
