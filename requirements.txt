@@ -2,3 +2,4 @@ Django==3.2
 Pillow==9.0.0
 chromedriver-py==98.0.4758.48
 selenium~=4.1.0
+django-ratelimit==3.0.1
