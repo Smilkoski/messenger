@@ -8,13 +8,34 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from ratelimit.decorators import ratelimit
+from rest_framework import viewsets
 
+from serializers import (
+    GroupSerializer,
+    UserGroupSerializer,
+    MessageSerializer,
+)
 from users.models import CustomUser
 from .models import (
     Group,
     Message,
     UserGroup,
 )
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+
+class UserGroupViewSet(viewsets.ModelViewSet):
+    queryset = UserGroup.objects.all()
+    serializer_class = UserGroupSerializer
 
 
 @ratelimit(key='ip', rate='100/d', block=True)
