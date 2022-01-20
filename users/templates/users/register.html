@@ -1,7 +1,11 @@
 {% extends "chat/layout.html" %}
 
 {% block body %}
-
+    {% for msg in messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h3>{{ msg }}</h3>
+        </div>
+    {% endfor %}
     <h2>Register</h2>
 
     {% if message %}

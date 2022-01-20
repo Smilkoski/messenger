@@ -1,3 +1,6 @@
+import string
+from django.contrib import messages
+
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -44,6 +47,29 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def validate_password_strength(value):
+    if len(value) < 10:
+        return False
+
+    # check for digit
+    if not any(char.isdigit() for char in value):
+        return False
+
+    # check for upper letter
+    if not any(char.isupper() for char in value):
+        return False
+
+    # check for lower letter
+    if not any(char.islower() for char in value):
+        return False
+
+    # check for special character
+    if not any(char.intersection(string.punctuation) for char in value):
+        return False
+
+    return True
+
+
 @ratelimit(key='ip', rate='100/d', block=True)
 def register(request):
     if request.method == "POST":
@@ -53,6 +79,11 @@ def register(request):
 
         # Ensure password matches confirmation
         password = request.POST["password"]
+        # password must have special characters, numbers, upper and lower letters
+        if not validate_password_strength(password):
+            messages.error(request, 'Password must have special characters, numbers, upper and lower letters')
+            return render(request, "users/register.html",)
+
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "users/register.html", {
