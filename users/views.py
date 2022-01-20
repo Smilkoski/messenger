@@ -1,6 +1,6 @@
 import string
-from django.contrib import messages
 
+from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,8 +10,15 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from ratelimit.decorators import ratelimit
+from rest_framework import viewsets
 
 from .models import CustomUser
+from .serializers import CustomUserSerializer
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
 
 @login_required
@@ -82,7 +89,7 @@ def register(request):
         # password must have special characters, numbers, upper and lower letters
         if not validate_password_strength(password):
             messages.error(request, 'Password must have special characters, numbers, upper and lower letters')
-            return render(request, "users/register.html",)
+            return render(request, "users/register.html", )
 
         confirmation = request.POST["confirmation"]
         if password != confirmation:
