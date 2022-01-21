@@ -1,18 +1,26 @@
 from datetime import datetime
 
+from PIL import Image
+from django.contrib.auth.models import User, Group
 from django.db import models
 
-from users.models import CustomUser
 
+class CustomUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    biography = models.TextField(default='')
 
-class Group(models.Model):
-    name = models.CharField(max_length=30)
-    description = models.CharField(max_length=50, default='')
+    def __str__(self):
+        return f'{self.user.username}'
 
-    def serializable(self):
-        return {'id': self.id,
-                'name': self.name,
-                'description': self.description, }
+    def save(self, *args, **kwargs):
+        super().save()
+
+        img = Image.open(self.image.path)
+        if img.height > 400 or img.width > 400:
+            output_size = (400, 400)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
 
 
 class Message(models.Model):
@@ -20,15 +28,6 @@ class Message(models.Model):
     date = models.DateTimeField(default=datetime.now)
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='message_custom_user')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='message_group')
-
-    def serializable(self):
-        return {'id': self.id,
-                'message': self.message,
-                'date': self.date,
-                'custom_user': self.custom_user.user.username,
-                'custom_user_id': self.custom_user.id,
-                'custom_user_image_url': self.custom_user.image.url,
-                'group': self.group.serializable(), }
 
 
 class UserGroup(models.Model):

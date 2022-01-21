@@ -58,11 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function renderData(group_id) {
   CURRENT_GROUP = group_id
-  fetch('/messages/' + group_id)
+  fetch('/messages?group=' + group_id)
+  // fetch('/messages?group=10', {
     .then(response => response.json())
     .then(messages => {
+      // console.log(messages)
       let tmp = ''
       for (let m in messages) {
+        console.log(messages[m])
         tmp += `
              <div class="message">
                  <img src="` + messages[m].custom_user_image_url + `" alt="user image">
@@ -92,6 +95,6 @@ const formatAMPM = (date) => {
 
 setInterval(function () {
   if (CURRENT_GROUP !== -1) {
-    renderData(CURRENT_GROUP)
+    // renderData(CURRENT_GROUP)
   }
 }, 5000);

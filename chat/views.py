@@ -10,12 +10,12 @@ from django.views.decorators.csrf import csrf_exempt
 from ratelimit.decorators import ratelimit
 from rest_framework import viewsets
 
-from serializers import (
+from .serializers import (
     GroupSerializer,
     UserGroupSerializer,
     MessageSerializer,
 )
-from users.models import CustomUser
+
 from .models import (
     Group,
     Message,
@@ -89,19 +89,22 @@ def new_group(request):
         g.save()
 
         names = list(request.POST)[3:]
-        customusers = CustomUser.objects.filter(user__username__in=names).all()
+        # customusers = CustomUser.objects.filter(user__username__in=names).all()
+        customusers = None
         for cu in customusers:
             ug = UserGroup(custom_user=cu, group=g)
             ug.save()
 
-        current_user = CustomUser.objects.get(user_id=request.user.id)
+        # current_user = CustomUser.objects.get(user_id=request.user.id)
+        current_user = None
         ug = UserGroup(custom_user=current_user, group=g)
         ug.save()
 
         return redirect(reverse('index'))
     else:
         context = {
-            'custom_users': CustomUser.objects.all()
+            # 'custom_users': CustomUser.objects.all()
+            'custom_users': None
         }
         return render(request, 'chat/new_group.html', context)
 
@@ -133,7 +136,8 @@ def update_group(request, group_id):
         Group.objects.filter(id=group_id).update(name=name, description=desc)
         g = Group.objects.get(id=group_id)
         names = list(request.POST)[3:]
-        custom_users = CustomUser.objects.filter(user__username__in=names).all()
+        # custom_users = CustomUser.objects.filter(user__username__in=names).all()
+        custom_users = None
         for cu in custom_users:
             ug = UserGroup(custom_user=cu, group=g)
             ug.save()
@@ -143,11 +147,12 @@ def update_group(request, group_id):
     else:
         participants = UserGroup.objects.filter(group_id=group_id).all().values_list('custom_user', flat=True)
         participants_ids = tuple(participants)
-        participants = CustomUser.objects.filter(user_id__in=participants_ids).all()
+        # participants = CustomUser.objects.filter(user_id__in=participants_ids).all()
+        participants = None
 
-        not_participants = CustomUser.objects.raw(
-            f'select id,user_id from users_customuser WHERE user_id NOT IN {participants_ids}')
-
+        # not_participants = CustomUser.objects.raw(
+        #     f'-- select id,user_id from users_customuser WHERE user_id NOT IN {participants_ids}')
+        not_participants = None
         g = Group.objects.get(id=group_id)
         context = {
             'group_id': group_id,

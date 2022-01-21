@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'rest_framework',
-    'users.apps.UsersConfig',
     'chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',

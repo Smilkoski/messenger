@@ -14,9 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls.static import static
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
 from messenger import settings
+from .views import (
+    UserGroupViewSet,
+    MessageViewSet,
+    GroupViewSet,
+)
 from .views import (
     index,
     messages,
@@ -25,14 +31,23 @@ from .views import (
     update_group,
 )
 
+router = routers.DefaultRouter()
+
+router.register(r'user_groups', UserGroupViewSet)
+router.register(r'messages', MessageViewSet)
+router.register(r'groups', GroupViewSet)
+
 urlpatterns = [
     path("", index, name="index"),
+    path('', include(router.urls)),
+
     path("new_group/", new_group, name="new_group"),
     path("update_group/<int:group_id>/", update_group, name="update_group"),
-    # API Routes
-    path('messages/<int:group_id>/', messages, name='messages'),
-    path('add_message/', add_message, name='add_message'),
+
 ]
+# API Routes
+# path('messages/<int:group_id>/', messages, name='messages'),
+# path('add_message/', add_message, name='add_message'),
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
